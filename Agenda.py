@@ -24,6 +24,10 @@ def verificar_e_corrigir_cabecalho():
         print("Cabeçalho incorreto detectado, corrigindo...")
         with open (ARQUIVO, mode= 'w', encoding= 'utf-8') as f:
             f.write(CABEÇALHO_ESPERADO + '\n')
+            
+            if not resto.startswith('\n'):
+                f.write('\n')
+
             f.write(resto)
         print("Cabeçalho corrigido!")
 
