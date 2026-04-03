@@ -7,14 +7,10 @@ ARQUIVO = 'Contatos.csv'
 CAMPOS = ['nome', 'telefone', 'email']
 CABEÇALHO_ESPERADO = ','.join(CAMPOS)
 
-#Verificação de Arquivo
-arquivo_existe = os.path.exists(ARQUIVO)
-arquivo_vazio = not arquivo_existe or  os.path.getsize(ARQUIVO) == 0
-
 #Verificação e correção de cabeçalho
 def verificar_e_corrigir_cabecalho():
-    if not arquivo_existe or arquivo_vazio:
-        return ("Arquivo novo, o cabeçalho será criado na hora de adicionar")
+    if not os.path.exists(ARQUIVO) or os.path.getsize(ARQUIVO) == 0:
+        return
     
     with open (ARQUIVO, mode= 'r', encoding= 'utf-8') as f:
         primeira_linha = f.readline().strip()
@@ -30,50 +26,72 @@ def verificar_e_corrigir_cabecalho():
 
             f.write(resto)
         print("Cabeçalho corrigido!")
-
 verificar_e_corrigir_cabecalho()
 
 #Ler Contatos
-try:
-    with open (ARQUIVO, mode='r', encoding='utf-8') as Contatos:
-        leitor = csv.DictReader(Contatos)
+def ler_contatos():
+    contatos = []
 
-        for linha in leitor:
-            if linha.get('nome'):
-                print(f"Nome: {linha['nome']}, Telefone: {linha['telefone']}, Email: {linha['email']}")
+    try:
+        with open (ARQUIVO, mode='r', encoding='utf-8') as arquivo:
+            leitor = csv.DictReader(arquivo)
 
-except FileNotFoundError:
-    print("Arquivo ainda não existe.")
+            for linha in leitor:
+                if linha.get('nome'):
+                    contatos.append(linha)
+
+    except FileNotFoundError:
+        pass
+    
+    return contatos
+
+#Listar Contatos
+def listar_contatos():
+    contatos = ler_contatos()
+
+    if not contatos:
+        print ("Nenhum contato encontrado.")
+        return
+
+    for contato in contatos:
+        print (f"Nome: {contato['nome']}, Telefone: {contato['telefone']}, Email: {contato['email']}")
+
+#Salvar Contatos
+def salvar_contatos(contatos):
+    with open (ARQUIVO, mode='w', encoding= 'utf-8', newline='') as arquivo:
+        writer = csv.DictWriter(arquivo, fieldnames=CAMPOS)
+        writer.writeheader()
+        writer.writerows(contatos)
 
 #Adicionar Contatos
-nome = input("Digite o nome: ").strip()
-telefone = input("Digite o telefone: ").strip()
-email = input("Digite o email: ").strip()
+def adicionar_contato():
+    nome = input("Digite o nome: ").strip()
+    telefone = input("Digite o telefone: ").strip()
+    email = input("Digite o email: ").strip()
 
-telefone_limpo = re.sub(r'\D', '', telefone)
+    telefone_limpo = re.sub(r'\D', '', telefone)
 
-#Validações
-if not nome or not telefone or not email:
-    print("Erro: Todos os campos são obrigatórios!")
+    #Validações
+    if not nome or not telefone or not email:
+        print("Erro: Todos os campos são obrigatórios!")
 
-elif len(telefone_limpo) < 10:
-    print("Erro: Telefone inválido!")
+    elif len(telefone_limpo) < 10:
+        print("Erro: Telefone inválido!")
 
-elif not re.match(r"[^@]+@[^@]+\.[^@]+",email):
-    print("Erro: Email inválido!")
+    elif not re.match(r"[^@]+@[^@]+\.[^@]+",email):
+        print("Erro: Email inválido!")
 
-else:
-    novo_contato = {
-        'nome': nome,
-        'telefone':telefone_limpo,
-        'email':email
-    }
+    else:
+        novo_contato = {
+            'nome': nome,
+            'telefone':telefone_limpo,
+            'email':email
+        }
 
-    with open (ARQUIVO, mode='a', encoding='utf-8', newline='') as Contatos:
-        adicionar = csv.DictWriter(Contatos, fieldnames=CAMPOS)
+        contatos=ler_contatos()
 
-        if arquivo_vazio:
-            adicionar.writeheader()
+        contatos.append(novo_contato)
 
-        adicionar.writerow(novo_contato)
+        salvar_contatos(contatos)
+
         print("Contato adicionado com sucesso!")
