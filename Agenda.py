@@ -20,11 +20,7 @@ def verificar_e_corrigir_cabecalho():
         print("Cabeçalho incorreto detectado, corrigindo...")
         with open (ARQUIVO, mode= 'w', encoding= 'utf-8') as f:
             f.write(CABEÇALHO_ESPERADO + '\n')
-            
-            if not resto.startswith('\n'):
-                f.write('\n')
-
-            f.write(resto)
+            f.write(resto.lstrip('\n'))
         print("Cabeçalho corrigido!")
 verificar_e_corrigir_cabecalho()
 
@@ -95,3 +91,56 @@ def adicionar_contato():
         salvar_contatos(contatos)
 
         print("Contato adicionado com sucesso!")
+
+def remover_contato():
+    contatos = ler_contatos()
+
+    if not contatos:
+        print("Nenhum contato disponível.")
+        return
+    
+    print("\n ---Lista de contatos: ---")
+    for i, c in enumerate(contatos):
+        print(f"{i} - {c['nome']} | {c['telefone']} | {c['email']}")
+
+    try:
+        indice = int(input("\nDigite o número do contato que deseja remover: "))
+
+        if indice < 0 or indice >= len(contatos):
+            print("Número inválido.")
+            return
+        
+    except ValueError:
+        print("Entrada inválida. Digite apenas números.")
+        return
+    
+    contato_escolhido = contatos[indice]
+
+    while True:
+        confirmar = input(f"Tem certeza que deseja remover '{contato_escolhido['nome']}'? (s/n): ").strip().lower()
+        if confirmar in ['s', 'sim']:
+            break
+        elif confirmar in ['n', 'nao', 'não']:
+            print("Remoção cancelada.")
+            return
+        else:
+            print("Digite apenas 's' ou 'n'.")
+
+    contato_removido = contatos.pop(indice)
+    salvar_contatos(contatos)
+    print(f"Contato '{contato_removido['nome']}' removido com sucesso!")
+
+def buscar_contato(nome):
+    contatos = ler_contatos()
+
+    contatos_filtrados = [
+        c for c in contatos if nome.lower() in c['nome'].lower()
+    ]
+
+    if not contatos_filtrados:
+        print("Contato não encontrado.")
+        return
+    
+    print("\nContatos correspondentes: ")
+    for i, c in enumerate(contatos_filtrados):
+        print(f"{i} - {c['nome']} | {c['telefone']} | {c['email']}")
