@@ -82,7 +82,7 @@ python Agenda.py
 
 ```text
 📦 projeto
- ┣ 📄 main.py
+ ┣ 📄 Agenda.py
  ┣ 📄 Contatos.csv
  ┗ 📄 README.md
 ```
