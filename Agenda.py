@@ -22,7 +22,6 @@ def verificar_e_corrigir_cabecalho():
             f.write(CABEÇALHO_ESPERADO + '\n')
             f.write(resto.lstrip('\n'))
         print("Cabeçalho corrigido!")
-verificar_e_corrigir_cabecalho()
 
 #Ler Contatos
 def ler_contatos():
@@ -92,6 +91,7 @@ def adicionar_contato():
 
         print("Contato adicionado com sucesso!")
 
+#Remover Contatos
 def remover_contato():
     contatos = ler_contatos()
 
@@ -99,7 +99,7 @@ def remover_contato():
         print("Nenhum contato disponível.")
         return
     
-    print("\n ---Lista de contatos: ---")
+    print("\n--- Lista de contatos: ---")
     for i, c in enumerate(contatos):
         print(f"{i} - {c['nome']} | {c['telefone']} | {c['email']}")
 
@@ -130,6 +130,7 @@ def remover_contato():
     salvar_contatos(contatos)
     print(f"Contato '{contato_removido['nome']}' removido com sucesso!")
 
+#Buscar Contatos
 def buscar_contato(nome):
     contatos = ler_contatos()
 
@@ -144,3 +145,45 @@ def buscar_contato(nome):
     print("\nContatos correspondentes: ")
     for i, c in enumerate(contatos_filtrados):
         print(f"{i} - {c['nome']} | {c['telefone']} | {c['email']}")
+
+def main():
+    verificar_e_corrigir_cabecalho()
+
+    while True:
+        print("\n--- Menu: ---")
+        print("1 - Listar contatos")
+        print("2 - Adicionar Contato")
+        print("3 - Buscar Contato")
+        print("4 - Remover Contato")
+        print("5 - Sair")
+
+        try:
+            escolha = int(input("Digite o número da opção desejada: ").strip())
+            if escolha <= 0 or escolha > 5:
+                print("Número inválido.")
+                continue
+            
+            if escolha == 1:
+                listar_contatos()
+            
+            elif escolha == 2:
+                adicionar_contato()
+            
+            elif escolha == 3:
+                nome = input("Digite o nome para a busca: ").strip()
+                buscar_contato(nome)
+            
+            elif escolha == 4:
+                remover_contato()
+            
+            elif escolha == 5:
+                print("Saindo...")
+                break
+
+        except ValueError:
+            print("Entrada inválida. Digite apenas números.")
+            continue
+
+#Main
+if __name__ == "__main__":
+    main()
